@@ -9,34 +9,40 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
+
+typedef unsigned int uint;
 
 class Solution {
 public:
     int lengthOfLongestSubstring(const std::string& s) {
         std::vector<bool> marked(256, false);
-        int currentOffset = 0;
-        int maxLen = 0;
 
-        int i;
+        int maxLen = 0;
+        int currentOffset = 0;
+
+        uint i;
         for (i = 0; i < s.size(); ++i)
         {
-            int ch = int(s[i]);
-            if (marked[ch] == true)
+            int ch = (int) s[i];
+
+            if (marked[ch])
             {
-                maxLen = std::max(maxLen, i-currentOffset);
-                while (s[currentOffset] != s[i])
+                maxLen = std::max(maxLen, int(i)-currentOffset);
+                while (ch != (int)s[currentOffset])
                 {
-                    marked[int(s[currentOffset])] = false;
+                    marked[(int) s[currentOffset]] = false;
                     ++currentOffset;
                 }
                 ++currentOffset;
             }
-            marked[int(s[i])] = true;
+            marked[ch] = true;
         }
 
-        maxLen = std::max(maxLen, i-currentOffset);
+        maxLen = std::max(maxLen, int(i)-currentOffset);
 
         return maxLen;
+
     }
 };
 
