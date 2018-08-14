@@ -21,54 +21,31 @@ struct ListNode {
     ListNode(int x) : val(x), next(nullptr) {}
 };
 
-class Solution {
-public:
-    ListNode* swapPairs(ListNode* head) {
-        if (head == nullptr)
-        {
-            return nullptr;
-        }
 
-        if (head->next == nullptr)
-        {
-            return head;
-        }
+ListNode* reverse(ListNode* head) {
 
-        ListNode* prevPair = nullptr;
-        ListNode* node = head;
+    ListNode* prev = nullptr;
+    ListNode* current = head;
+    ListNode* next = nullptr;
 
-        while (node && node->next)
-        {
-            ListNode* pairLead = node->next;
-            node->next = pairLead->next;
-            pairLead->next = node;
+    while (current)
+    {
+        next = current->next;
 
-            if (prevPair)
-            {
-                prevPair->next = pairLead;
-            }
-            else
-            {
-                head = pairLead;
-            }
-            prevPair = node;
-
-            node = node->next;
-        }
-
-        if (node)
-        {
-            prevPair->next = node;
-        }
-
-        return head;
+        current->next = prev;
+        
+        prev = current;
+        current = next;
     }
-};
+
+    return prev; 
+}
 
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/extensions/HelperMacros.h>
+#include <algorithm>
 
 std::ostream& operator<<(std::ostream& os, const std::vector<int>& v)
 {
@@ -114,8 +91,7 @@ std::vector<int> formVector(ListNode* node)
 
 std::vector<int> apply(std::vector<int> input)
 {
-	Solution s;
-	return formVector(s.swapPairs(formList(input)));
+	return formVector(reverse(formList(input)));
 } 
 
 
@@ -143,7 +119,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test );
 void Test::test1()
 {
     std::vector<int> input  = {1, 2, 3, 4};
-    std::vector<int> output = {2, 1, 4, 3};
+    std::vector<int> output = input;
+
+    std::reverse(output.begin(), output.end());
 
     CPPUNIT_ASSERT_EQUAL(output, apply(input));
 }
@@ -151,7 +129,9 @@ void Test::test1()
 void Test::test2()
 {
     std::vector<int> input  = {1, 2, 3, 4, 5};
-    std::vector<int> output = {2, 1, 4, 3, 5};
+    std::vector<int> output = input;
+
+    std::reverse(output.begin(), output.end());
 
     CPPUNIT_ASSERT_EQUAL(output, apply(input));
 }
