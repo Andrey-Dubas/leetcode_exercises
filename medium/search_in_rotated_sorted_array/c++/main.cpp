@@ -1,70 +1,66 @@
+// https://leetcode.com/problems/search-in-rotated-sorted-array/description/
+// 
+// Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+// 
+// (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
+// 
+// You are given a target value to search. If found in the array return its index, otherwise return -1.
+// 
+// You may assume no duplicate exists in the array.
+// 
+// Your algorithm's runtime complexity must be in the order of O(log n).
+// 
+// Example 1:
+// 
+// Input: nums = [4,5,6,7,0,1,2], target = 0
+// Output: 4
+// 
+// Example 2:
+// 
+// Input: nums = [4,5,6,7,0,1,2], target = 3
+// Output: -1
+
+
 #include <vector>
 
 class Solution {
 public:
     int search(std::vector<int>& nums, int target) {
-        if (nums.size() == 0) { return -1; }
-        if (nums.size() == 1) { return target == nums[0]? 0: -1; }
-
+        const int len = nums.size();
+        if (len == 0) { return -1;}
+        
         int baseline = nums[0];
-        int len = nums.size();
+        
         int low = 0, high = len-1;
-
-        if (nums[0] < nums[1] && nums[0] <= nums[len-1]) { }
-        else if (nums[len-1] < nums[0] && nums[len-1] <= nums[len-2]) {}
-        else
+        
+        while (true)
         {
-        do
-        {
-
+            
+            if (nums[high] <= nums[(high-1+len)%len]) { low = high; }
+            if (nums[low]  <= nums[(low -1+len)%len]) { break; }
+            
             int middle = (high+low)/2;
-            if (nums[middle] < baseline) {high = middle;}
-            else if (nums[middle] > baseline) {low = middle+1;}
-            else
-            {
-                int prevMiddle = (middle-1)%len;
-                if (nums[prevMiddle] == baseline)
-                {
-                    high = prevMiddle;
-                }
-                else { low = middle; break;}
-            }
-        } while (nums[low] >= nums[(low-1+len)%len]);
+            if      (nums[middle] < baseline) {high = middle; }
+            else if (nums[middle] > baseline) {low  = middle+1;}
         }
-        int minIndex = nums[high] > nums[low] ? low : high;
+        int minIndex = low;
 
-        // return minIndex;
-        low = 0; high = len-1;
-
-        if (target >= baseline)
-        {
-            high = (minIndex-1+len)%len;
-        }
-        else
-        {
-            low = minIndex;
-        }
-
-        //return minIndex;
-
-        //std::cout << std::endl << "high: " << high << ", low: " << low << std::endl;
-        do
+        low = minIndex; high = len-1+minIndex;
+        
+        while (high >= low)
         {
             int middle = (high+low)/2;
-            // std::cout << middle << " " << nums[middle] << "   ";
-            if      (nums[middle] > target) { high = middle-1;}
-            else if (nums[middle] < target) { low  = middle+1;}
-            else {return middle;}
-            if (high == low)
-            {
-                if (nums[high] == target) { return high;}
-                else {return -1;}
-            }
-        } while (high >= low);
-
+            int middleEl = nums[middle%len];
+            
+            if      (middleEl > target) {high = middle-1;}
+            else if (middleEl < target) {low  = middle+1;}
+            else {return middle%len;}
+        }
+        
         return -1;
     }
 };
+
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
@@ -77,6 +73,9 @@ class Test: public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST( test1 );
     CPPUNIT_TEST( test2 );
     CPPUNIT_TEST( test3 );
+    CPPUNIT_TEST( test4 );
+    CPPUNIT_TEST( test5 );
+    CPPUNIT_TEST( test6 );
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -84,6 +83,9 @@ public:
     void test1();
     void test2();
     void test3();
+    void test4();
+    void test5();
+    void test6();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Test );
@@ -114,6 +116,26 @@ void Test::test3()
 
 }
 
+void Test::test4()
+{
+    Solution s;
+    std::vector<int> v = {1, 3, 5};
+    CPPUNIT_ASSERT_EQUAL(-1, s.search(v, 0));
+}
+
+void Test::test5()
+{
+    Solution s;
+    std::vector<int> v = {3, 1};
+    CPPUNIT_ASSERT_EQUAL(1, s.search(v, 1));
+}
+
+void Test::test6()
+{
+    Solution s;
+    std::vector<int> v = {5, 1, 3};
+    CPPUNIT_ASSERT_EQUAL(0, s.search(v, 5));
+}
 
 int main()
 {
